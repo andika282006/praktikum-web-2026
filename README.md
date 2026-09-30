@@ -13,5 +13,6 @@
 
 ### Spesifikasi Perangkat
 - **Sistem Operasi:** Windows 10
+- **kapasitas RAM :** 8/256 GB
 - **Versi Node.js:** v24.21.0
 - **Versi Git:** 2.56.0
