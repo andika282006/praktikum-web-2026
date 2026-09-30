@@ -1,7 +1,7 @@
 **Informasi Mahasiswa:**
 * **Nama:** Andika Rahman
 * **NIM:** 2406044
-* **Kelas/Prodi:** Teknik Informatika - ITG
+* **Kelas/Prodi:** A/Teknik Informatika - ITG
 * **Kode MK:** IFRWP5151
 
 ---
