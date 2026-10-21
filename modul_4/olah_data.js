@@ -4,7 +4,7 @@
 const Project = [
     {
         id:1,
-        title:"Website Company Profile",
+        title:"Sistem Inventaris Keuangan",
         category:"Web App",
         budget: 2500000,
         completed: true
