@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Aplikasi To-Do List - Modul 5</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+    <div class="todo-app">
+        <h2>Daftar Tugas Saya</h2>
+
+        <!-- Fitur 1: Task Counter -->
+        <div id="taskCounter" style="font-size: 13px; color: #64748b; margin-bottom: 12px; text-align: center;">
+            Total: 0 Tugas | Selesai: 0 | Belum Selesai: 0
+        </div>
+
+        <form id="todoForm" class="input-section">
+            <input type="text" id="taskInput" placeholder="Tugas baru">
+            <button type="submit" class="add-btn">Tambah</button>
+        </form>
+        <div id="inputError" class="error-message">Minimal 3 karakter untuk tugas baru!</div>
+
+        <ul id="todoList" class="todo-list"></ul>
+
+        <!-- Fitur 2: Tombol Bersihkan Tugas Selesai -->
+        <button id="clearCompletedBtn" style="width: 100%; margin-top: 14px; background-color: #64748b; color: white; border: none; padding: 8px; border-radius: 6px; font-size: 13px; cursor: pointer;">
+            Bersihkan Tugas Selesai
+        </button>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
