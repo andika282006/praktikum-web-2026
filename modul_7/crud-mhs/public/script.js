@@ -1,176 +1,189 @@
+// File: public/script.js - Logika Client-Side JavaScript CRUD + Tugas Mandiri
 document.addEventListener("DOMContentLoaded", () => {
-  const mhsForm = document.querySelector("#mhsForm");
-  const mhsIdInput = document.querySelector("#mhsId");
-  const nimInput = document.querySelector("#nim");
-  const namaInput = document.querySelector("#nama");
-  const jurusanInput = document.querySelector("#jurusan");
-  const emailInput = document.querySelector("#email");
-  const btnSubmit = document.querySelector("#btnSubmit");
-  const btnCancel = document.querySelector("#btnCancel");
-  const formTitle = document.querySelector("#formTitle");
-  const mhsTableBody = document.querySelector("#mhsTableBody");
-  const alertMessage = document.querySelector("#alertMessage");
+    // 1. Tangkap Elemen DOM
+    const mhsForm = document.querySelector("#mhsForm");
+    const mhsIdInput = document.querySelector("#mhsId");
+    const nimInput = document.querySelector("#nim");
+    const namaInput = document.querySelector("#nama");
+    const jurusanInput = document.querySelector("#jurusan");
+    const emailInput = document.querySelector("#email");
+    const btnSubmit = document.querySelector("#btnSubmit");
+    const btnCancel = document.querySelector("#btnCancel");
+    const formTitle = document.querySelector("#formTitle");
+    const mhsTableBody = document.querySelector("#mhsTableBody");
+    const alertMessage = document.querySelector("#alertMessage");
+    
+    // Elemen Fitur Tugas Mandiri
+    const searchInput = document.querySelector("#searchInput");
+    const totalMhsText = document.querySelector("#totalMhsText");
 
-  const state = {
-    listMahasiswa: []
-  };
+    let listMahasiswa = [];
 
-  const showAlert = (text, type = "success") => {
-    if (!alertMessage) return;
+    // Fungsi Pembantu Notifikasi Alert
+    const showAlert = (text, type = "success") => {
+        alertMessage.textContent = text;
+        alertMessage.className = `alert alert-${type}`;
+        alertMessage.style.display = "block";
+        setTimeout(() => { alertMessage.style.display = "none"; }, 3000);
+    };
 
-    alertMessage.textContent = text;
-    alertMessage.className = `alert alert-${type}`;
-    alertMessage.style.display = "block";
+    // 2. READ: Ambil Data Mahasiswa dari API Node.js
+    const loadMahasiswa = async () => {
+        try {
+            const res = await fetch("/api/mahasiswa");
+            listMahasiswa = await res.json();
+            renderTable(listMahasiswa);
+            updateCounter(listMahasiswa.length);
+        } catch (err) {
+            showAlert("Gagal memuat data dari server backend", "error");
+        }
+    };
 
-    clearTimeout(showAlert.timeoutId);
-    showAlert.timeoutId = setTimeout(() => {
-      alertMessage.style.display = "none";
-    }, 3000);
-  };
+    // Fungsi Render Tabel & Update Counter (Fitur 3)
+    const renderTable = (data) => {
+        mhsTableBody.innerHTML = "";
+        
+        // Update teks counter total mahasiswa berdasarkan data yang tampil/tersedia
+        totalMhsText.textContent = `Total Mahasiswa Terdaftar: ${listMahasiswa.length} Orang`;
 
-  const resetForm = () => {
-    if (!mhsForm || !mhsIdInput || !formTitle || !btnSubmit || !btnCancel) return;
+        if (data.length === 0) {
+            mhsTableBody.innerHTML = "<tr><td colspan='6' style='text-align:center; color:#64748b;'>Belum ada data mahasiswa tersimpan.</td></tr>";
+            return;
+        }
 
-    mhsForm.reset();
-    mhsIdInput.value = "";
-    formTitle.textContent = "Tambah Mahasiswa Baru";
-    btnSubmit.textContent = "Simpan Mahasiswa";
-    btnCancel.style.display = "none";
-  };
+        data.forEach((mhs, idx) => {
+            const tr = document.createElement("tr");
+            tr.innerHTML = `
+                <td>${idx + 1}</td>
+                <td>${mhs.nim}</td>
+                <td>${mhs.nama}</td>
+                <td>${mhs.jurusan}</td>
+                <td>${mhs.email}</td>
+                <td>
+                    <button class="btn-action btn-edit" data-id="${mhs.id}">Edit</button>
+                    <button class="btn-action btn-delete" data-id="${mhs.id}">Hapus</button>
+                </td>
+            `;
+            mhsTableBody.appendChild(tr);
+        });
+    };
 
-  const renderTable = (data = []) => {
-    if (!mhsTableBody) return;
-
-    mhsTableBody.innerHTML = "";
-
-    if (!data.length) {
-      mhsTableBody.innerHTML = "<tr><td colspan='6' style='text-align:center; color:#64748b;'>Belum ada data mahasiswa tersimpan.</td></tr>";
-      return;
+    // 3. FITUR 1: Kolom Pencarian Real-Time (Search Filter)
+    if (searchInput) {
+        searchInput.addEventListener("input", (e) => {
+            const keyword = e.target.value.toLowerCase().trim();
+            const filteredData = listMahasiswa.filter(mhs => 
+                mhs.nama.toLowerCase().includes(keyword) || 
+                mhs.nim.toLowerCase().includes(keyword)
+            );
+            renderTable(filteredData);
+        });
     }
 
-    data.forEach((mhs, index) => {
-      const row = document.createElement("tr");
-      row.innerHTML = `
-        <td>${index + 1}</td>
-        <td>${mhs.nim}</td>
-        <td>${mhs.nama}</td>
-        <td>${mhs.jurusan}</td>
-        <td>${mhs.email}</td>
-        <td>
-          <button class="btn-action btn-edit" data-id="${mhs.id}">Edit</button>
-          <button class="btn-action btn-delete" data-id="${mhs.id}">Hapus</button>
-        </td>
-      `;
-      mhsTableBody.appendChild(row);
-    });
-  };
+    // 4. CREATE & UPDATE: Submit Formulir + FITUR 2 (Validasi NIM Duplikat)
+    mhsForm.addEventListener("submit", async (e) => {
+        e.preventDefault();
 
-  const loadMahasiswa = async () => {
-    try {
-      const response = await fetch("/api/mahasiswa");
-      if (!response.ok) {
-        throw new Error("Request gagal");
-      }
+        const nimVal = nimInput.value.trim();
+        const id = mhsIdInput.value;
+        const isEdit = Boolean(id);
 
-      const data = await response.json();
-      state.listMahasiswa = Array.isArray(data) ? data : [];
-      renderTable(state.listMahasiswa);
-    } catch (error) {
-      showAlert("Gagal memuat data dari server backend", "error");
-    }
-  };
-
-  const getFormData = () => ({
-    nim: nimInput.value.trim(),
-    nama: namaInput.value.trim(),
-    jurusan: jurusanInput.value.trim(),
-    email: emailInput.value.trim()
-  });
-
-  if (mhsForm) {
-    mhsForm.addEventListener("submit", async (event) => {
-      event.preventDefault();
-
-      const payload = getFormData();
-      const id = mhsIdInput.value;
-      const isEdit = Boolean(id);
-      const url = isEdit ? `/api/mahasiswa/${id}` : "/api/mahasiswa";
-      const method = isEdit ? "PUT" : "POST";
-
-      try {
-        const response = await fetch(url, {
-          method,
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify(payload)
+        // FITUR 2: Validasi Pencegahan NIM Duplikat menggunakan .some()
+        const isDuplicate = listMahasiswa.some(mhs => {
+            if (isEdit) {
+                // Jika sedang edit, abaikan jika NIM milik mahasiswa itu sendiri
+                return mhs.nim === nimVal && mhs.id !== Number(id);
+            } else {
+                // Jika tambah baru, cek apakah NIM sudah ada
+                return mhs.nim === nimVal;
+            }
         });
 
-        const result = await response.json();
-
-        if (result.success) {
-          showAlert(result.message);
-          resetForm();
-          await loadMahasiswa();
-          return;
+        if (isDuplicate) {
+            showAlert("NIM sudah terdaftar!", "error");
+            return; // Batalkan submit jika duplikat
         }
 
-        showAlert("Terjadi kesalahan: " + result.message, "error");
-      } catch (error) {
-        showAlert("Gagal mengirim data ke server", "error");
-      }
-    });
-  }
+        const payload = {
+            nim: nimVal,
+            nama: namaInput.value.trim(),
+            jurusan: jurusanInput.value,
+            email: emailInput.value.trim()
+        };
 
-  if (mhsTableBody) {
-    mhsTableBody.addEventListener("click", async (event) => {
-      const button = event.target.closest("button");
-      if (!button) return;
-
-      const id = Number(button.dataset.id);
-      if (!id) return;
-
-      if (button.classList.contains("btn-edit")) {
-        const targetMahasiswa = state.listMahasiswa.find((mhs) => mhs.id === id);
-        if (!targetMahasiswa) return;
-
-        mhsIdInput.value = targetMahasiswa.id;
-        nimInput.value = targetMahasiswa.nim;
-        namaInput.value = targetMahasiswa.nama;
-        jurusanInput.value = targetMahasiswa.jurusan;
-        emailInput.value = targetMahasiswa.email;
-
-        formTitle.textContent = "Edit Data Mahasiswa";
-        btnSubmit.textContent = "Perbarui Mahasiswa";
-        btnCancel.style.display = "inline-block";
-        window.scrollTo({ top: 0, behavior: "smooth" });
-        return;
-      }
-
-      if (button.classList.contains("btn-delete")) {
-        const confirmation = window.confirm("Apakah Anda yakin ingin menghapus data mahasiswa ini?");
-        if (!confirmation) return;
+        const url = isEdit ? `/api/mahasiswa/${id}` : "/api/mahasiswa";
+        const method = isEdit ? "PUT" : "POST";
 
         try {
-          const response = await fetch(`/api/mahasiswa/${id}`, { method: "DELETE" });
-          const result = await response.json();
+            const res = await fetch(url, {
+                method: method,
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify(payload)
+            });
+            const result = await res.json();
 
-          if (result.success) {
-            showAlert(result.message);
-            await loadMahasiswa();
-            return;
-          }
-
-          showAlert("Gagal menghapus data dari server", "error");
-        } catch (error) {
-          showAlert("Gagal menghapus data dari server", "error");
+            if (result.success) {
+                showAlert(result.message);
+                resetForm();
+                if (searchInput) searchInput.value = ""; // Reset pencarian saat data berubah
+                loadMahasiswa();
+            } else {
+                showAlert("Terjadi kesalahan: " + result.message, "error");
+            }
+        } catch (err) {
+            showAlert("Gagal mengirim data ke server", "error");
         }
-      }
     });
-  }
 
-  if (btnCancel) {
+    // 5. DELETE & EDIT: Tangani Event Klik pada Tabel (Event Delegation)
+    mhsTableBody.addEventListener("click", async (e) => {
+        const id = Number(e.target.dataset.id);
+        if (!id) return;
+
+        // Mode Edit: Isi form otomatis
+        if (e.target.classList.contains("btn-edit")) {
+            const targetMhs = listMahasiswa.find(m => m.id === id);
+            if (targetMhs) {
+                mhsIdInput.value = targetMhs.id;
+                nimInput.value = targetMhs.nim;
+                namaInput.value = targetMhs.nama;
+                jurusanInput.value = targetMhs.jurusan;
+                emailInput.value = targetMhs.email;
+                formTitle.textContent = "Edit Data Mahasiswa";
+                btnSubmit.textContent = "Perbarui Mahasiswa";
+                btnCancel.style.display = "inline-block";
+                window.scrollTo({ top: 0, behavior: "smooth" });
+            }
+        }
+        // Mode Delete: Hapus data via HTTP DELETE
+        else if (e.target.classList.contains("btn-delete")) {
+            if (confirm("Apakah Anda yakin ingin menghapus data mahasiswa ini?")) {
+                try {
+                    const res = await fetch(`/api/mahasiswa/${id}`, { method: "DELETE" });
+                    const result = await res.json();
+                    if (result.success) {
+                        showAlert(result.message);
+                        if (searchInput) searchInput.value = "";
+                        loadMahasiswa();
+                    }
+                } catch (err) {
+                    showAlert("Gagal menghapus data dari server", "error");
+                }
+            }
+        }
+    });
+
+    // 6. Reset Form ke Mode Tambah
+    const resetForm = () => {
+        mhsForm.reset();
+        mhsIdInput.value = "";
+        formTitle.textContent = "Tambah Mahasiswa Baru";
+        btnSubmit.textContent = "Simpan Mahasiswa";
+        btnCancel.style.display = "none";
+    };
+
     btnCancel.addEventListener("click", resetForm);
-  }
 
-  resetForm();
-  loadMahasiswa();
+    // Ambil data pertama kali saat halaman dimuat
+    loadMahasiswa();
 });
