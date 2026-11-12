@@ -1,0 +1,198 @@
+:root {
+  --bg: #f1f5f9;
+  --surface: #ffffff;
+  --surface-border: #e2e8f0;
+  --primary: #1e3a8a;
+  --primary-dark: #1e40af;
+  --text: #0f172a;
+  --muted: #64748b;
+  --field: #cbd5e1;
+  --info: #0284c7;
+  --danger: #dc2626;
+  --success-bg: #dcfce7;
+  --success-text: #166534;
+  --success-border: #bbf7d0;
+  --error-bg: #fee2e2;
+  --error-text: #991b1b;
+  --error-border: #fecaca;
+  --shadow: rgba(15, 23, 42, 0.06);
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+  font-family: "Segoe UI", Arial, sans-serif;
+}
+
+body {
+  background-color: var(--bg);
+  color: var(--text);
+  padding: 30px 15px;
+}
+
+.container {
+  max-width: 900px;
+  margin: 0 auto;
+}
+
+h2 {
+  color: var(--primary);
+  font-size: 22px;
+  margin-bottom: 4px;
+}
+
+.subtitle {
+  color: var(--muted);
+  font-size: 13.5px;
+  margin-bottom: 20px;
+}
+
+.form-card,
+.table-card {
+  background: var(--surface);
+  border: 1px solid var(--surface-border);
+  border-radius: 10px;
+  box-shadow: 0 4px 6px var(--shadow);
+  margin-bottom: 20px;
+  padding: 22px;
+}
+
+.form-card h3 {
+  color: var(--primary);
+  border-bottom: 2px solid var(--surface-border);
+  font-size: 16px;
+  margin-bottom: 14px;
+  padding-bottom: 8px;
+}
+
+.form-row {
+  display: flex;
+  gap: 14px;
+  margin-bottom: 12px;
+}
+
+.flex-1 {
+  flex: 1;
+}
+
+.form-group label {
+  display: block;
+  color: #334155;
+  font-size: 12.5px;
+  font-weight: 600;
+  margin-bottom: 4px;
+}
+
+.req {
+  color: var(--danger);
+}
+
+input[type="text"],
+input[type="email"],
+select {
+  width: 100%;
+  border: 1px solid var(--field);
+  border-radius: 6px;
+  font-size: 13.5px;
+  outline: none;
+  padding: 9px 12px;
+}
+
+input:focus,
+select:focus {
+  border-color: var(--primary);
+}
+
+.form-actions {
+  display: flex;
+  gap: 8px;
+  margin-top: 10px;
+}
+
+.btn {
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 13px;
+  font-weight: 600;
+  padding: 8px 16px;
+  transition: 0.2s ease;
+}
+
+.btn-primary {
+  background-color: var(--primary);
+  color: #fff;
+}
+
+.btn-primary:hover {
+  background-color: var(--primary-dark);
+}
+
+.btn-secondary {
+  background-color: var(--muted);
+  color: #fff;
+}
+
+.btn-action {
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 12px;
+  font-weight: bold;
+  padding: 5px 10px;
+}
+
+.btn-edit {
+  background-color: var(--info);
+  color: #fff;
+  margin-right: 4px;
+}
+
+.btn-delete {
+  background-color: var(--danger);
+  color: #fff;
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+th,
+td {
+  border-bottom: 1px solid var(--surface-border);
+  font-size: 13.5px;
+  padding: 11px 12px;
+  text-align: left;
+}
+
+th {
+  background-color: var(--primary);
+  color: #fff;
+  font-weight: 600;
+}
+
+tr:hover {
+  background-color: #f8fafc;
+}
+
+.alert {
+  border-radius: 6px;
+  font-size: 13px;
+  font-weight: 500;
+  margin-bottom: 16px;
+  padding: 10px 14px;
+}
+
+.alert-success {
+  background-color: var(--success-bg);
+  border: 1px solid var(--success-border);
+  color: var(--success-text);
+}
+
+.alert-error {
+  background-color: var(--error-bg);
+  border: 1px solid var(--error-border);
+  color: var(--error-text);
+}
